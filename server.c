@@ -1,25 +1,23 @@
 #include <stdio.h>
-#include <jansson.h>
 #include <string.h>
+#include <stdlib.h>
 #include <ulfius.h>
 #include <locale.h>
 #include <orcania.h>
 #include <jansson.h>
 
-#define PORT 8082
-
+#define PORT 8080
+int id = 0;
 char *json;
 
-char * print_map(const struct _u_map * map);
+
 
 int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_get_with_params(const struct _u_request *request, struct _u_response *response, void *user_data);
 int createToken(const struct _u_request *request, struct _u_response *response, void *user_data);
 int callback_post(const struct _u_request *request, struct _u_response *response, void *user_data);
 
-/*
- * main function
- */
+
 int main(void) {
   setlocale(LC_ALL, "");
   char txt[] = "{\"Ip\": \"8.8.8.8\",\"Cow\": [{\"ID\": 1,	\"Localizacao\": [{\"Horario\": \"2023-06-06 23:39:40.845\",\"Latitude\": -29.6928309,\"Longitude\": -53.8094293},{\"Horario\": \"2023-06-06 23:39:40.845\",\"Latitude\": 45.516,\"Longitude\": -122.636}]},{\"ID\": 2,\"Localizacao\": [{\"Horario\": \"2023-06-06 23:39:40.845\",\"Latitude\": 45.516,\"Longitude\": -122.636},{\"Horario\": \"2023-06-06 23:39:40.845\",\"Latitude\": 45.516,\"Longitude\": -122.636}]}]}";
@@ -80,12 +78,12 @@ int callback_get_with_params(const struct _u_request *request, struct _u_respons
 
 int createToken(const struct _u_request *request, struct _u_response *response, void *user_data) {
     const char *param1 = u_map_get(request->map_url, "Ip");
-    
-
+    char token[64];
     /* Gerar o token */
-    
+    id++;
+    sprintf(token,"%d",id);
     /* Gerar o token */
-    ulfius_set_string_body_response(response, 200, param1);
+    ulfius_set_string_body_response(response, 200, token);
     
 
     return U_CALLBACK_CONTINUE;
