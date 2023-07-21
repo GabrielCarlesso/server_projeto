@@ -1,3 +1,7 @@
+/*Para compilar usar:
+gcc -o bin/server server.c -lulfius -ljansson
+*/
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -5,17 +9,18 @@
 #include <locale.h>
 #include <orcania.h>
 #include <jansson.h>
+#include "include/cercaVirtual.h"
 
 #define PORT 8080
 int id = 0;
 char *json;
 
 
-
 int callback_default (const struct _u_request * request, struct _u_response * response, void * user_data);
 int callback_get_with_params(const struct _u_request *request, struct _u_response *response, void *user_data);
 int createToken(const struct _u_request *request, struct _u_response *response, void *user_data);
 int callback_post(const struct _u_request *request, struct _u_response *response, void *user_data);
+int callback_define_cercaVirtual(const struct _u_request *request, struct _u_response *response, void *user_data);
 
 
 int main(void) {
@@ -33,6 +38,7 @@ int main(void) {
   }
 
   // Endpoint list declaration
+  ulfius_add_endpoint_by_val(&instance, "POST", "/cercaVirtual", NULL, 0, &callback_define_cercaVirtual, NULL);
   ulfius_add_endpoint_by_val(&instance, "POST", "/post", NULL, 0, &callback_post, NULL);
   ulfius_add_endpoint_by_val(&instance, "GET", "/createToken", NULL, 0, &createToken, NULL);
   ulfius_add_endpoint_by_val(&instance, "GET", "/localization",NULL, 0, &callback_get_with_params, NULL);
@@ -114,6 +120,30 @@ json_t *json_body = ulfius_get_json_body_request(request,NULL);
   return U_CALLBACK_CONTINUE;
 }
 
+int callback_define_cercaVirtual(const struct _u_request *request, struct _u_response *response, void *user_data) {
+json_t *json_body = ulfius_get_json_body_request(request,NULL);
+    if (json_body != NULL) {
+        char *json_str = json_dumps(json_body, JSON_INDENT(2));
+        printf("JSON recebido:\n%s\n", json_str);
+
+        struct Point pontoRecebido = {-27.862716104479084, -54.467711144344776};
+
+        if(isInsidePolygon(pontoRecebido, polygon, 4)){
+          printf("O ponto está dentro do polígono.\n");
+          ulfius_set_string_body_response(response, 200,"ok");
+
+        }else{
+          printf("O ponto está fora do polígono.\n");
+
+        }
+
+        free(json_str);
+    } else {
+        printf("Falha ao obter o JSON do corpo da solicitação.\n");
+    }
+
+  return U_CALLBACK_CONTINUE;
+}
 
 
 /* Exemplo de post com body x-www-form-urlencoded */
