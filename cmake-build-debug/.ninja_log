@@ -1,0 +1,4 @@
+# ninja log v5
+0	45	1693168492401486463	build.ninja	5fba79bedb633d84
+1	120	1693168112897046899	server_projeto	9b4fa6557e8ce6b2
+1	106	1693168015432098188	CMakeFiles/server_projeto.dir/main.c.o	9c944d8a1d3de0e
